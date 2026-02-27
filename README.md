@@ -60,6 +60,11 @@ optional arguments:
                         Optional args to pass to the ELF file
 ```
 
+`bungeegum` talks to the local ADB server by default. To target an alternate
+server (for example, `adb` forwarded over SSH), set the standard
+`ADB_SERVER_SOCKET` environment variable before launching the tool, e.g.
+`export ADB_SERVER_SOCKET=tcp:127.0.0.1:5038`.
+
 ## Examples
 
 - Run an ELF from the host on the device:
