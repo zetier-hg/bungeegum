@@ -19,7 +19,7 @@ GADGET_JNI_LIB := libfrida-gadget.so
 
 APP_JNI_DIR := $(ROOT_DIR)/android_app/$(PKG_NAME)/src/main/jniLibs
 CURRENT_UID_GID := $(shell id -u):$(shell id -g)
-BUILD_IMAGE := bungeegum/android_apk_builder:gradle-6.5.1-sdk-33
+BUILD_IMAGE := bungeegum/android_apk_builder:gradle-9.4.1-sdk-24
 ARCHES := armeabi-v7a arm64-v8a
 
 BUILD_DIR := build
@@ -57,19 +57,19 @@ bungeegum/$(APK): $(APK_PATH)
 # frida-compile the native bridge into the fork_exec.js script
 $(INSTALL_DIR)/$(FORK_EXEC): $(SRC_DIR)/_$(FORK_EXEC)
 	@cp $< $(INSTALL_DIR)
-	docker run -it -u $(CURRENT_UID_GID) -v "$(ROOT_DIR)/$(INSTALL_DIR)":/python -w /python -e OPENSSL_FORCE_FIPS_MODE=0 $(BUILD_IMAGE) /bin/bash -c "frida-compile _fork_exec.js -o fork_exec.js"
+	docker run -u $(CURRENT_UID_GID) -v "$(ROOT_DIR)/$(INSTALL_DIR)":/python -w /python -e OPENSSL_FORCE_FIPS_MODE=0 $(BUILD_IMAGE) /bin/bash -c "frida-compile _fork_exec.js -o fork_exec.js"
 	rm $(INSTALL_DIR)/_$(FORK_EXEC)
 
 # frida-compile the native bridge into the run_shellcode.js script
 $(INSTALL_DIR)/$(RUN_SC): $(SRC_DIR)/_$(RUN_SC)
 	@cp $< $(INSTALL_DIR)
-	docker run -it -u $(CURRENT_UID_GID) -v "$(ROOT_DIR)/$(INSTALL_DIR)":/python -w /python -e OPENSSL_FORCE_FIPS_MODE=0 $(BUILD_IMAGE) /bin/bash -c "frida-compile _run_shellcode.js -o run_shellcode.js"
+	docker run -u $(CURRENT_UID_GID) -v "$(ROOT_DIR)/$(INSTALL_DIR)":/python -w /python -e OPENSSL_FORCE_FIPS_MODE=0 $(BUILD_IMAGE) /bin/bash -c "frida-compile _run_shellcode.js -o run_shellcode.js"
 	rm $(INSTALL_DIR)/_$(RUN_SC)
 
 $(BUILD_DIR)/python: $(SRC_PY)
 	@mkdir -p $(BUILD_DIR)/python
 	@cp -r python/* $@/
-	docker run -it -u $(CURRENT_UID_GID) -v "$(ROOT_DIR)/$(INSTALL_DIR)":/python -w /python -e OPENSSL_FORCE_FIPS_MODE=0 $(BUILD_IMAGE) /bin/bash -c "npm install frida-java-bridge"
+	docker run -u $(CURRENT_UID_GID) -v "$(ROOT_DIR)/$(INSTALL_DIR)":/python -w /python -e OPENSSL_FORCE_FIPS_MODE=0 $(BUILD_IMAGE) /bin/bash -c "npm install frida-java-bridge"
 
 build:
 	@mkdir -p build
@@ -82,7 +82,7 @@ dev: build/.dockerfile_timestamp
 
 app: bungeegum/$(APK) $(BUILD_DIR)/python $(INSTALL_DIR)/$(FORK_EXEC) $(INSTALL_DIR)/$(RUN_SC)
 
-python:
+python: app
 	VERSION=$(VERSION) FRIDA_VERSION=$(FRIDA_VERSION) python3 -m pip install $(BUILD_DIR)/python
 
 

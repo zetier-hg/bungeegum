@@ -4,9 +4,7 @@
 FROM gradle:9.4.1-jdk25
 
 ENV SDK_HOME /usr/local
-RUN apt-get --quiet update --yes
-RUN apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 curl npm
-RUN apt-get --quiet install --yes libqt5widgets5 usbutils
+RUN apt-get --quiet update --yes && apt-get --quiet install --yes wget tar unzip lib32stdc++6 lib32z1 curl npm libqt5widgets5 usbutils
 
 ENV APP_HOME=/app
 
