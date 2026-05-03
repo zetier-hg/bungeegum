@@ -11,9 +11,8 @@ ENV APP_HOME=/app
 ARG HOST_UID
 ARG HOST_GID
 
-RUN groupadd -g $HOST_GID user
-RUN useradd -m -u $HOST_UID -g user user
-USER user
+RUN getent group  $HOST_GID || groupadd -g $HOST_GID user
+RUN getent passwd $HOST_UID || useradd -m -u $HOST_UID -g user user
 
 # android sdk|build-tools|image
 ENV ANDROID_TARGET_SDK="android-33" \
@@ -21,11 +20,11 @@ ENV ANDROID_TARGET_SDK="android-33" \
     ANDROID_SDK_TOOLS="7583922"
 ENV ANDROID_SDK_URL https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS}_latest.zip
 RUN OPENSSL_FORCE_FIPS_MODE=0 curl -sSL "${ANDROID_SDK_URL}" -o android-sdk-linux.zip \
-    && unzip android-sdk-linux.zip -d /home/user/android-sdk-linux \
+    && unzip android-sdk-linux.zip -d /opt/android-sdk-linux \
     && rm -rf android-sdk-linux.zip
 
 # Set ANDROID_HOME
-ENV ANDROID_HOME /home/user/android-sdk-linux
+ENV ANDROID_HOME /opt/android-sdk-linux
 ENV PATH ${ANDROID_HOME}/bin:$PATH
 
 # Update and install using sdkmanager
@@ -35,9 +34,9 @@ RUN echo yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_H
 RUN echo yes | $ANDROID_HOME/cmdline-tools/bin/sdkmanager --sdk_root=${ANDROID_HOME} "platforms;${ANDROID_TARGET_SDK}"
 
 # Install frida java bridge
-USER root
 RUN OPENSSL_FORCE_FIPS_MODE=0 npm install -g frida-compile
 
+RUN chmod -R 777 $ANDROID_HOME
 RUN chmod -R 777 /home/gradle
 ENV _JAVA_OPTIONS=-Duser.home=/home/gradle
 ENV GRADLE_USER_HOME = /home/gradle
