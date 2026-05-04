@@ -4,6 +4,11 @@ dependencies {
     implementation fileTree(dir: 'libs', include: '*.jar')
 }
 android {
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true // Equivalent to extractNativeLibs="true"
+        }
+    }
     namespace 'com.zetier.bungeegum'
     compileSdkVersion 24
 

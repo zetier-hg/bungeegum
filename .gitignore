@@ -2,7 +2,7 @@
 *.so
 .gradle
 build
-bungeegum.egg-info
 gradle_out/
 venv
+.venv
 android_app/com.zetier.bungeegum/build.gradle

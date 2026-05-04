@@ -26,7 +26,7 @@ ARCHES := armeabi-v7a arm64-v8a
 
 BUILD_DIR := build
 SRC_DIR := python/src/bungeegum
-INSTALL_DIR := $(BUILD_DIR)/python/src/bungeegum
+INSTALL_DIR := $(BUILD_DIR)/$(SRC_DIR)
 FORK_EXEC := fork_exec.js
 RUN_SC := run_shellcode.js
 SRC_PY :=  $(wildcard $(SRC_DIR)/*.py)
@@ -85,7 +85,7 @@ dev: build/.dockerfile_timestamp
 
 # Copy both variants to Python package
 app: build/$(APK_API21) build/$(APK_API24) $(BUILD_DIR)/python $(INSTALL_DIR)/$(FORK_EXEC) $(INSTALL_DIR)/$(RUN_SC)
-	@cp build/$(APK_API21) build/$(APK_API24) python/src/bungeegum/
+	@cp build/$(APK_API21) build/$(APK_API24) $(INSTALL_DIR)
 
 python: app
 	VERSION=$(VERSION) FRIDA_VERSION=$(FRIDA_VERSION) python3 -m pip install $(BUILD_DIR)/python
@@ -117,8 +117,10 @@ clean:
 	rm -rf android_app/$(PKG_NAME)/build
 	rm -rf android_app/.gradle
 	rm -rf android_app/gradle_out
-	rm -rf $(APP_JNI_DIR)/*
+	rm -rf android_app/build
+	rm -rf $(APP_JNI_DIR)
 	rm -rf build
+	rm $(BUILD_GRADLE)
 
 dist-clean: clean
 	docker image rm $(BUILD_IMAGE) -f
